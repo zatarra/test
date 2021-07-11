@@ -1,0 +1,95 @@
+<html>
+  <head>
+  <title>Game Report</title>
+  <!-- Load c3.css -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.9/c3.min.css" rel="stylesheet">
+  <!-- Load d3.js and c3.js -->
+  <script src="https://d3js.org/d3.v5.min.js" integrity="sha384-M06Cb6r/Yrkprjr7ngOrJlzgekrkkdmGZDES/SUnkUpUol0/qjsaQWQfLzq0mcfg" crossorigin="anonymous" charset="utf-8"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.9/c3.min.js" integrity="sha384-JaEjdP+ei0eIVL2e+buqFtzSvslya/m6TYxWgGiJQRmaWSmH8W5Alg72SY/puDOo" crossorigin="anonymous"></script>
+  </head>
+  <body>
+  <h1>Round score by user</h1>
+  <div id="chart_score_by_user"></div>
+  <h1>Round score by team</h1>
+  <div id="chart_score_by_team"></div>
+  <h1>Round score by team</h1>
+  <div id="chart_score_by_team"></div>
+  
+  <script type="text/javascript" src="../newgame.js"></script>
+  <script type="text/javascript">
+  const gameData = playGame(rounds, users, teams);
+  // Sort object by their value. First convert into an array of arrays then use the sort method to compare the second position (the value)
+  // https://javascript.plainenglish.io/sorting-objects-39a3cc47f9fe
+  console.log(gameData);
+  gameData['results']['otherStats']['failedCards']  = Object.entries(results['otherStats']['failedCards']).sort((a, b) => { a[1] - b[1]});
+  console.log(gameData);
+  let scoreByUser = []
+  // Load scores by user into an array that can be used as datasource for the chart. 
+  Object.keys(gameData['config']['users']).forEach(user => {
+    let userScore = [user];
+    Object.keys(gameData['results']['roundScores']['users']).forEach(round => {
+      
+      // console.log(gameData['results']['roundScores']['users'][round][user]);
+      userScore.push(gameData['results']['roundScores']['users'][round][user]);
+    });
+    scoreByUser.push(userScore);
+  });
+  let scoreByTeam = []
+  // Load scores by teams into an array that can be used as datasource for the chart. 
+  Object.keys(gameData['config']['teams']).forEach(team => {
+    let teamScore = [team];
+    Object.keys(gameData['results']['roundScores']['teams']).forEach(round => {
+      
+      // console.log(gameData['results']['roundScores']['teams'][round][team]);
+      teamScore.push(gameData['results']['roundScores']['teams'][round][team]);
+    });
+    scoreByTeam.push(teamScore);
+  });
+
+  var chart = c3.generate({
+    bindto: '#chart_score_by_user',
+    data: {
+      x: 'x',
+      columns: [['x', ...Array(gameData['results']['roundScores']['users'].length).fill(0).map((_, idx) => idx + 1)], ...scoreByUser],
+      type: 'bar'
+    },
+    axis: {
+      y: {
+        label: { // ADD
+          text: 'Scores',
+          position: 'outer-middle'
+        }
+      },
+      x: {
+        type: 'category',
+        label: { 
+          text: 'Round #',
+          position: 'center'
+        }
+      }
+    },
+});
+var chart_team = c3.generate({
+    bindto: '#chart_score_by_team',
+    data: {
+      columns: scoreByTeam,
+      type: 'bar',
+    },
+    axis: {
+      y: {
+        label: { // ADD
+          text: 'Score',
+          position: 'outer-middle'
+        }
+      },
+      x: {
+        label: { 
+          text: 'Round #',
+          position: 'center'
+        }
+      }
+    },
+});
+</script>
+  </body>
+  </html>
