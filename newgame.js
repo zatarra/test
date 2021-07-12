@@ -200,6 +200,7 @@ function playGame(rounds, users, teams) {
 
 if (typeof window === 'undefined') {
   // Print results to console if this script is invoked via nodejs
-  const game = playGame(rounds, users, teams);
-  console.log(JSON.stringify(game));
+  // const game = playGame(rounds, users, teams);
+  // console.log(JSON.stringify(game));
+  console.log(JSON.stringify({rounds: rounds, users: users, teams: teams}));
 }
